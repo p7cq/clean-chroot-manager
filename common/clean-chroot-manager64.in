@@ -188,6 +188,19 @@ check_active() {
   fi
 }
 
+mirror_trust_to_chroot() {
+  local host_ca_trust="/etc/ca-certificates"
+  if [[ -d "$CHROOTPATH64"/root$host_ca_trust ]]; then
+    if rm -rf "$CHROOTPATH64"/root$host_ca_trust && cp -a $host_ca_trust "$CHROOTPATH64"/root/etc/; then
+      local mesg="Host CA certificates copied in chroot"
+      echo -e "${GREEN}==>${ALL_OFF}${BOLD} ${mesg}${ALL_OFF}"
+      return 0
+    fi
+  fi
+  local mesg="Failed to copy CA certificates"
+  echo -e "${RED}==> ERROR:${ALL_OFF}${BOLD} ${mesg}${ALL_OFF}"; exit 1
+}
+
 create() {
   if [[ -f "$CHROOTPATH64"/root/.arch-chroot ]]; then
     local mesg="Working directory $CHROOTPATH64 already exists."
@@ -229,6 +242,8 @@ create() {
   if ! mkarchroot "${insargs[@]}" "$CHROOTPATH64"/root "${pkgs[@]}"; then
     exit 1
   fi
+
+  mirror_trust_to_chroot
 
   if [[ -n "$RUNDISTCC" ]]; then
     if [[ $DISTCCFAIL -ne 1 ]]; then

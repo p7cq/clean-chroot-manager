@@ -1,6 +1,8 @@
 # clean-chroot-manager
 Wrapper script to manage chroots when building packages under Arch Linux.
 
+*Note*: Modified to mirror CA certificates from host to chroot.
+
 ## Why use it?
 Ccm provides several advantages over the standard arch-build scripts:
 * Automatically manages a local repo so dependencies that you build are pulled transparently from that local repo.
